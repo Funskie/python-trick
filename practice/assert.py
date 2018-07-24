@@ -10,3 +10,9 @@ shoes = {'name': 'NIKE', 'price': 4000}
 print(apply_discount(shoes, 0.3)) #output = 2800 Nice!
 
 print(apply_discount(shoes, 1.5))
+#Traceback (most recent call last):
+#  File "/Users/funskie/Desktop/python-trick-master/practice/assert.py", line 12, in <module>
+#    print(apply_discount(shoes, 1.5))
+#  File "/Users/funskie/Desktop/python-trick-master/practice/assert.py", line 5, in apply_discount
+#    assert 0 <= price <= product['price']
+#AssertionError
