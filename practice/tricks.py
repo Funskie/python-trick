@@ -22,6 +22,62 @@ AssertionError
 #assert 用在程式內部自我檢查，若是可預期的情況(ex: 條件描述、找不到檔案...)則使用if或自定義的Error
 #當tuple為assert第一個參數時，條件一定為真，所以斷言不可能會work
 def error_assert():
-    assert(1 == 2, 'it should fail!')#but is work!
-    pass
-error_assert()
+    assert(1 == 2, 'it should fail!')
+    return 'but it worked!'
+print(error_assert())#but is work!
+
+# 2-3文脈管理器context manager, 讓自己的class也支援with的用法，可以再run完後自動釋放資源，
+# 需再class中加入__enter__(), __exit()__方法
+class ManagedFile:
+    def __init__(self, name):
+        self.name = name
+
+    def __enter__(self):
+        self.file = open(self.name, 'w')
+        return self.file
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        if self.file:
+            self.file.close()
+
+with ManagedFile('hello.txt') as f:
+    f.write('hello, world!')
+    f.write('bye~')#check the file!!!!
+
+# 利用contextlib工具模組實作
+from contextlib import contextmanager
+
+@contextmanager
+def managed_file(name):
+    try:
+        f = open(name, 'w')
+        yield f
+    finally:
+        f.close()
+
+with managed_file('hello_2.txt') as f:
+    f.write('hello, world! again...')#check the file!!!!
+
+#寫一個支援文脈管理器的文字縮排程式
+class Indenter:
+    def __init__(self):
+        self.level = 0
+    
+    def __enter__(self):
+        self.level += 1
+        return self
+    
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        self.level -= 1
+    
+    def print(self, text):
+        print(' ' * 4 * self.level + text)
+
+with Indenter() as indent:
+    indent.print('first')
+    with indent:
+        indent.print('second')
+        with indent:
+            indent.print('third')
+        indent.print('second')
+    indent.print('first')
